@@ -28,12 +28,14 @@
  */
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -52,30 +54,35 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
+@Configurable
 @TeleOp(name = "Kinet1cs Bare Bones Teleop", group = "Robot")
-@Disabled
 public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
     // This declares the four motors needed
-    DcMotor fL;
-    DcMotor fR;
-    DcMotor bL;
-    DcMotor bR;
-    DcMotor intakeMain;
-    DcMotor outtake;
+    DcMotorEx fL;
+    DcMotorEx fR;
+    DcMotorEx bL;
+    DcMotorEx bR;
+    DcMotorEx intakeMain;
+    DcMotorEx outtake;
     CRServo transfer;
 
 
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
+    // VARIABLES
+    public static double intakePower = 0.3;
+    public static double outtakeVelocity = 0.2;
+    public static double transferPower = 0.25;
+
     @Override
     public void init() {
-        fL = hardwareMap.get(DcMotor.class, "fL");
-        fR = hardwareMap.get(DcMotor.class, "fR");
-        bL = hardwareMap.get(DcMotor.class, "bL");
-        bR = hardwareMap.get(DcMotor.class, "bR");
-        intakeMain = hardwareMap.get(DcMotor.class, "intake");
-        outtake = hardwareMap.get(DcMotor.class, "outtake");
+        fL = hardwareMap.get(DcMotorEx.class, "fL");
+        fR = hardwareMap.get(DcMotorEx.class, "fR");
+        bL = hardwareMap.get(DcMotorEx.class, "bL");
+        bR = hardwareMap.get(DcMotorEx.class, "bR");
+        intakeMain = hardwareMap.get(DcMotorEx.class, "intake");
+        outtake = hardwareMap.get(DcMotorEx.class, "outtake");
         transfer = hardwareMap.get(CRServo.class, "transfer");
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
@@ -103,6 +110,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+
     }
 
     @Override
@@ -120,14 +129,13 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         // If you press the left bumper, you get a drive from the point of view of the robot
         // (much like driving an RC vehicle)
         if (gamepad1.right_trigger > 0.5) {
-            intakeMain.setPower(0.3);
+            intakeMain.setPower(intakePower);
         } else {
             intakeMain.setPower(0);
         }
         if (gamepad1.right_bumper) {
             letsOuttake();
         } else {
-            outtake.setPower(0);
             transfer.setPower(0);
         }
         if (gamepad1.left_bumper) {
@@ -135,6 +143,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
+        outtake.setVelocity(outtakeVelocity);
     }
 
     // This routine drives the robot field relative
@@ -154,9 +163,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         // Finally, call the drive method with robot relative forward and right amounts
         drive(newForward, newRight, rotate);
     }
-    public void letsOuttake(){
-        outtake.setPower(0.2);
-        transfer.setPower(0.25);
+    public void letsOuttake(){ //function to activate the transfer
+        transfer.setPower(transferPower);
     }
     // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {
