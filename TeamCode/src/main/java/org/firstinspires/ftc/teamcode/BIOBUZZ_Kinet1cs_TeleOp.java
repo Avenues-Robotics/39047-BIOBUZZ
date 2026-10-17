@@ -75,7 +75,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
 
     // VARIABLES
     public static double intakePower = 0.3;
-    public static double outtakeVelocity = 50;
+    public static double outtakeVelocity = 10;
     public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
 
@@ -97,7 +97,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         fL.setDirection(DcMotor.Direction.REVERSE);
         intakeMain.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
         outtake.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
-        fLIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        fLIntake.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
@@ -138,13 +138,14 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         // (much like driving an RC vehicle)
         if (gamepad1.right_trigger > 0.5) {
             intakeMain.setPower(intakePower);
-            fRIntake.setPower(intakeServosPower);
-            fLIntake.setPower(intakeServosPower);
+
         } else {
             intakeMain.setPower(0);
+
         }
         if (gamepad1.right_bumper) {
             letsOuttake();
+
         } else {
             transfer.setPower(0);
         }
@@ -154,8 +155,12 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
         outtake.setVelocity(outtakeVelocity);
+        fRIntake.setPower(intakeServosPower);
+        fLIntake.setPower(-1 * intakeServosPower);
     }
-
+    public void letsOuttake(){ //function to activate the transfer
+        transfer.setPower(transferPower);
+    }
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
         // First, convert direction being asked to drive to polar coordinates
@@ -173,9 +178,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         // Finally, call the drive method with robot relative forward and right amounts
         drive(newForward, newRight, rotate);
     }
-    public void letsOuttake(){ //function to activate the transfer
-        transfer.setPower(transferPower);
-    }
+
     // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {
         // This calculates the power needed for each wheel based on the amount of forward,
