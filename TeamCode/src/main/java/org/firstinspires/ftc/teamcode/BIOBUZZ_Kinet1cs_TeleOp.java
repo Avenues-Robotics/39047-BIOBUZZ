@@ -65,6 +65,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
     DcMotorEx intakeMain;
     DcMotorEx outtake;
     CRServo transfer;
+    CRServo fRIntake;
+    CRServo fLIntake;
 
 
     // This declares the IMU needed to get the current direction the robot is facing
@@ -72,8 +74,9 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
 
     // VARIABLES
     public static double intakePower = 0.3;
-    public static double outtakeVelocity = 0.2;
+    public static double outtakeVelocity = 500;
     public static double transferPower = 0.25;
+    public static double intakeServosPower = 0.2;
 
     @Override
     public void init() {
@@ -84,6 +87,9 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         intakeMain = hardwareMap.get(DcMotorEx.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "outtake");
         transfer = hardwareMap.get(CRServo.class, "transfer");
+        fRIntake = hardwareMap.get(CRServo.class, "fRIntake");
+        fLIntake = hardwareMap.get(CRServo.class, "fLIntake");
+
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
         bL.setDirection(DcMotor.Direction.REVERSE);
@@ -130,6 +136,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         // (much like driving an RC vehicle)
         if (gamepad1.right_trigger > 0.5) {
             intakeMain.setPower(intakePower);
+            fRIntake.setPower(intakeServosPower);
+            fLIntake.setPower(intakeServosPower);
         } else {
             intakeMain.setPower(0);
         }
