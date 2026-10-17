@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -74,9 +75,9 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
 
     // VARIABLES
     public static double intakePower = 0.3;
-    public static double outtakeVelocity = 500;
-    public static double transferPower = 0.25;
-    public static double intakeServosPower = 0.2;
+    public static double outtakeVelocity = 50;
+    public static double transferPower = 0.2;
+    public static double intakeServosPower = 0.3;
 
     @Override
     public void init() {
@@ -96,6 +97,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         fL.setDirection(DcMotor.Direction.REVERSE);
         intakeMain.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
         outtake.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
+        fLIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
