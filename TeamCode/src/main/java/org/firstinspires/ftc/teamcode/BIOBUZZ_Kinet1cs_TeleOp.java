@@ -32,6 +32,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -61,7 +62,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
     DcMotor bR;
     DcMotor intakeMain;
     DcMotor outtake;
-    Servo transfer;
+    CRServo transfer;
 
 
     // This declares the IMU needed to get the current direction the robot is facing
@@ -75,7 +76,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         bR = hardwareMap.get(DcMotor.class, "bR");
         intakeMain = hardwareMap.get(DcMotor.class, "intake");
         outtake = hardwareMap.get(DcMotor.class, "outtake");
-        transfer = hardwareMap.get(Servo.class, "transfer");
+        transfer = hardwareMap.get(CRServo.class, "transfer");
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
         bL.setDirection(DcMotor.Direction.REVERSE);
@@ -127,6 +128,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
             letsOuttake();
         } else {
             outtake.setPower(0);
+            transfer.setPower(0);
         }
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
@@ -154,6 +156,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
     }
     public void letsOuttake(){
         outtake.setPower(0.2);
+        transfer.setPower(0.25);
     }
     // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {
