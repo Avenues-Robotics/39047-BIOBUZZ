@@ -81,7 +81,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
 
     @Override
     public void init() {
-        // Names must match the robot configuration on the Driver Station exactly
+        // Configuration match up & setup in beggining
         fL = hardwareMap.get(DcMotorEx.class, "fL");
         fR = hardwareMap.get(DcMotorEx.class, "fR");
         bL = hardwareMap.get(DcMotorEx.class, "bL");
@@ -92,7 +92,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         fRIntake = hardwareMap.get(CRServo.class, "fRIntake");
         fLIntake = hardwareMap.get(CRServo.class, "fLIntake");
 
-        // This reverqses fL and bR. If strafing/turning is wrong, change bR to bL.
+        // This reverses fL and bR. If strafing/turning is wrong, change bR to bL.
         fL.setDirection(DcMotor.Direction.REVERSE);
         bR.setDirection(DcMotor.Direction.REVERSE);
         intakeMain.setDirection(DcMotor.Direction.FORWARD); // flip if intake spins backwards
@@ -127,8 +127,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         if (gamepad1.right_trigger > 0.5) intake = intakePower;
         else if (gamepad1.left_trigger > 0.5) intake = -intakePower;
         intakeMain.setPower(intake);
-        // Side servos follow the main intake direction. Left is negative because it's mirrored.
-        fRIntake.setPower(Math.signum(intake) * intakeServosPower);
+        // Side servos follow the main intake direction. Left is negative because it's mirrored. 
+        fRIntake.setPower(Math.signum(intake) * intakeServosPower); // signum checks for positivity
         fLIntake.setPower(-Math.signum(intake) * intakeServosPower);
 
         // ---------- OUTTAKE ----------
