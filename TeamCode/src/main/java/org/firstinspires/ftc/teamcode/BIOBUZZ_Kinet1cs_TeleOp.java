@@ -30,7 +30,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -38,49 +37,51 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 /*
- * This OpMode illustrates how to program your robot to drive field relative.  This means
- * that the robot drives the direction you push the joystick regardless of the current orientation
- * of the robot.
- *
- * This OpMode assumes that you have four mecanum wheels each on its own motor named:
- *   front_left_motor, front_right_motor, back_left_motor, back_right_motor
- *
- *   and that the left motors are flipped such that when they turn clockwise the wheel moves backwards
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- *
+ * Kinet1cs TeleOp
+ * Controls (gamepad1):
+ *   Left stick      = drive (field relative)
+ *   Right stick X   = turn
+ *   Left bumper     = hold for robot relative drive
+ *   Right trigger   = intake in
+ *   Left trigger    = intake reverse (spit out)
+ *   Y               = toggle outtake flywheel on/off
+ *   Right bumper    = fire (transfer feeds ONLY when flywheel is at speed)
+ *   A               = reset IMU yaw (point robot "forward" first)
  */
 @Configurable
 @TeleOp(name = "Kinet1cs Bare Bones Teleop", group = "Robot")
 public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
-    // This declares the four motors needed
-    DcMotorEx fL;
-    DcMotorEx fR;
-    DcMotorEx bL;
-    DcMotorEx bR;
-    DcMotorEx intakeMain;
-    DcMotorEx outtake;
-    CRServo transfer;
-    CRServo fRIntake;
-    CRServo fLIntake;
 
+    // ---------- HARDWARE ----------
+    DcMotorEx fL, fR, bL, bR;      // mecanum drive motors
+    DcMotorEx intakeMain;          // main intake roller
+    DcMotorEx outtake;             // flywheel launcher
+    CRServo transfer;              // feeds elements into the flywheel
+    CRServo fRIntake, fLIntake;    // side intake servos
+    IMU imu;                       // gives robot heading for field relative drive
 
-    // This declares the IMU needed to get the current direction the robot is facing
-    IMU imu;
+    ElapsedTime loopTimer = new ElapsedTime();  // measures how long each loop takes
 
-    // VARIABLES
+    // ---------- TUNABLE VALUES (editable live in Panels because of @Configurable) ----------
     public static double intakePower = 0.3;
-    public static double outtakeVelocity = 10;
+    public static double outtakeVelocity = 1500;   // ticks per second. Old value 10 was almost stopped
+    public static double atSpeedTolerance = 0.95;  // flywheel counts as "ready" at 95% of target
     public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
+    public static double maxSpeed = 1.0;           // lower this for outreach / new drivers
+
+    // ---------- STATE ----------
+    boolean outtakeOn = false;  // is the flywheel toggled on
+    boolean lastY = false;      // Y button state last loop, used to detect a single press
 
     @Override
     public void init() {
+        // Names must match the robot configuration on the Driver Station exactly
         fL = hardwareMap.get(DcMotorEx.class, "fL");
         fR = hardwareMap.get(DcMotorEx.class, "fR");
         bL = hardwareMap.get(DcMotorEx.class, "bL");
@@ -91,120 +92,100 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
         fRIntake = hardwareMap.get(CRServo.class, "fRIntake");
         fLIntake = hardwareMap.get(CRServo.class, "fLIntake");
 
-        // We set the left motors in reverse which is needed for drive trains where the left
-        // motors are opposite to the right ones.
-        bR.setDirection(DcMotor.Direction.REVERSE);
+        // This reverqses fL and bR. If strafing/turning is wrong, change bR to bL.
         fL.setDirection(DcMotor.Direction.REVERSE);
-        intakeMain.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
-        outtake.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
+        bR.setDirection(DcMotor.Direction.REVERSE);
+        intakeMain.setDirection(DcMotor.Direction.FORWARD); // flip if intake spins backwards
+        outtake.setDirection(DcMotor.Direction.FORWARD);    // flip if flywheel spins backwards
         fLIntake.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
-        // wires, you should remove these
-        fL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intakeMain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // RUN_USING_ENCODER = motor uses its encoder to hold a steady speed.
+        // BRAKE = drive motors stop right away when the stick is released.
+        for (DcMotorEx m : new DcMotorEx[]{fL, fR, bL, bR, intakeMain, outtake}) {
+            m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+        // FLOAT for the flywheel so it coasts down instead of slamming to a stop
+        outtake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+        // IMU setup. Change these two if the Control Hub is mounted differently.
         imu = hardwareMap.get(IMU.class, "imu");
-        // This needs to be changed to match the orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-
-        RevHubOrientationOnRobot orientationOnRobot = new
-                RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+        imu.resetYaw();  // whatever way the robot faces at init = "forward"
     }
 
     @Override
     public void loop() {
-        telemetry.addLine("Press A to reset Yaw");
-        telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addLine("The left joystick sets the robot direction");
-        telemetry.addLine("Moving the right joystick left and right turns the robot");
+        // ---------- IMU RESET ----------
+        if (gamepad1.a) imu.resetYaw();
 
-        // If you press the A button, then you reset the Yaw to be zero from the way
-        // the robot is currently pointing
-        //if (gamepad1.a) {
-            //imu.resetYaw();
-       // }
-        // If you press the left bumper, you get a drive from the point of view of the robot
-        // (much like driving an RC vehicle)
-        if (gamepad1.right_trigger > 0.5) {
-            intakeMain.setPower(intakePower);
+        // ---------- INTAKE ----------
+        // Right trigger pulls in, left trigger spits out, neither = stop.
+        double intake = 0;
+        if (gamepad1.right_trigger > 0.5) intake = intakePower;
+        else if (gamepad1.left_trigger > 0.5) intake = -intakePower;
+        intakeMain.setPower(intake);
+        // Side servos follow the main intake direction. Left is negative because it's mirrored.
+        fRIntake.setPower(Math.signum(intake) * intakeServosPower);
+        fLIntake.setPower(-Math.signum(intake) * intakeServosPower);
 
-        } else {
-            intakeMain.setPower(0);
+        // ---------- OUTTAKE ----------
+        // Toggle only on the moment Y is pressed, not every loop it's held.
+        if (gamepad1.y && !lastY) outtakeOn = !outtakeOn;
+        lastY = gamepad1.y;
+        outtake.setVelocity(outtakeOn ? outtakeVelocity : 0);
 
-        }
-        if (gamepad1.right_bumper) {
-            letsOuttake();
+        // ---------- TRANSFER ----------
+        // atSpeed check: only feed when the flywheel is fast enough or shots fall short.
+        boolean atSpeed = outtakeOn && outtake.getVelocity() >= outtakeVelocity * atSpeedTolerance;
+        transfer.setPower(gamepad1.right_bumper && atSpeed ? transferPower : 0);
 
-        } else {
-            transfer.setPower(0);
-        }
+        // ---------- DRIVE ----------
+        // Stick Y is negative when pushed forward so flip it.
         if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
-        outtake.setVelocity(outtakeVelocity);
-        fRIntake.setPower(intakeServosPower);
-        fLIntake.setPower(-1 * intakeServosPower);
-    }
-    public void letsOuttake(){ //function to activate the transfer
-        transfer.setPower(transferPower);
-    }
-    // This routine drives the robot field relative
-    private void driveFieldRelative(double forward, double right, double rotate) {
-        // First, convert direction being asked to drive to polar coordinates
-        double theta = Math.atan2(forward, right);
-        double r = Math.hypot(right, forward);
 
-        // Second, rotate angle by the angle the robot is pointing
+        // ---------- DEBUG TELEMETRY ----------
+        telemetry.addData("Yaw (deg)", "%.1f", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("Outtake", "%s  %.0f / %.0f", outtakeOn ? "ON" : "OFF", outtake.getVelocity(), outtakeVelocity);
+        telemetry.addData("At speed", atSpeed);
+        telemetry.addData("Intake power", "%.2f", intake);
+        telemetry.addData("Drive", "fL %.2f fR %.2f bL %.2f bR %.2f",
+                fL.getPower(), fR.getPower(), bL.getPower(), bR.getPower());
+        telemetry.addData("Loop (ms)", "%.1f", loopTimer.milliseconds()); // should stay around 20 ms or less
+        loopTimer.reset();
+        telemetry.update();
+    }
+
+    // Field relative drive: rotates the joystick direction by the robot's heading,
+    // so forward on the stick always means away from the driver.
+    private void driveFieldRelative(double forward, double right, double rotate) {
+        double theta = Math.atan2(forward, right);   // stick angle
+        double r = Math.hypot(right, forward);       // stick strength
         theta = AngleUnit.normalizeRadians(theta -
                 imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-
-        // Third, convert back to cartesian
-        double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
-
-        // Finally, call the drive method with robot relative forward and right amounts
-        drive(newForward, newRight, rotate);
+        drive(r * Math.sin(theta), r * Math.cos(theta), rotate);
     }
 
-    // Thanks to FTC16072 for sharing this code!!
+    // Mecanum math: combine forward, strafe and turn into 4 wheel powers.
     public void drive(double forward, double right, double rotate) {
-        // This calculates the power needed for each wheel based on the amount of forward,
-        // strafe right, and rotate
-        double frontLeftPower = forward + right + rotate;
-        double frontRightPower = forward - right - rotate;
-        double backRightPower = forward + right - rotate;
-        double backLeftPower = forward - right + rotate;
+        double flP = forward + right + rotate;
+        double frP = forward - right - rotate;
+        double brP = forward + right - rotate;
+        double blP = forward - right + rotate;
 
-        double maxPower = 1.0;
-        double maxSpeed = 1.0;  // make this slower for outreaches
+        // If any wheel is over 1.0, scale all down together so the direction stays correct.
+        double max = Math.max(1.0, Math.max(Math.max(Math.abs(flP), Math.abs(frP)),
+                Math.max(Math.abs(brP), Math.abs(blP))));
 
-        // This is needed to make sure we don't pass > 1.0 to any wheel
-        // It allows us to keep all of the motors in proportion to what they should
-        // be and not get clipped
-        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
-        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
-        maxPower = Math.max(maxPower, Math.abs(backRightPower));
-        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-
-        // We multiply by maxSpeed so that it can be set lower for outreaches
-        // When a young child is driving the robot, we may not want to allow full
-        // speed.
-        fL.setPower(maxSpeed * (frontLeftPower / maxPower));
-        fR.setPower(maxSpeed * (frontRightPower / maxPower));
-        bL.setPower(maxSpeed * (backLeftPower / maxPower));
-        bR.setPower(maxSpeed * (backRightPower / maxPower));
+        fL.setPower(maxSpeed * flP / max);
+        fR.setPower(maxSpeed * frP / max);
+        bL.setPower(maxSpeed * blP / max);
+        bR.setPower(maxSpeed * brP / max);
     }
 }
