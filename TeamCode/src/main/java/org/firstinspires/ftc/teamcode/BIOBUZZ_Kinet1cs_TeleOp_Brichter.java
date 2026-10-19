@@ -30,7 +30,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -38,7 +37,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 /*
@@ -56,8 +54,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  */
 @Configurable
-@TeleOp(name = "Kinet1cs Bare Bones Teleop", group = "Robot")
-public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
+@TeleOp(name = "Kinet1cs OldBot Teleop", group = "Robot")
+public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     // This declares the four motors needed
     DcMotorEx fL;
     DcMotorEx fR;
