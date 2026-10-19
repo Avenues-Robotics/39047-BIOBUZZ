@@ -93,7 +93,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp extends OpMode {
 
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        bL.setDirection(DcMotor.Direction.REVERSE);
+        bR.setDirection(DcMotor.Direction.REVERSE);
         fL.setDirection(DcMotor.Direction.REVERSE);
         intakeMain.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
         outtake.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
