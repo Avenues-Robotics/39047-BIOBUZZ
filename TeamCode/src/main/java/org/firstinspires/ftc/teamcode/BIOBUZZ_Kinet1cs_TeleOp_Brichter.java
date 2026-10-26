@@ -75,7 +75,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
 
     // VARIABLES
     public static double intakePower = 0.3;
-    public static double outtakeVelocity = 10;
+    public static double outtakeVelocity = 1500;
     public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
 
@@ -93,7 +93,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
 
 // We set the left motors in reverse which is needed for drive trains where the left
 // motors are opposite to the right ones.
-        bL.setDirection(DcMotor.Direction.REVERSE);
+        bL.setDirection(DcMotor.Direction.FORWARD);
+        fL.setDirection(DcMotor.Direction.FORWARD);
         bR.setDirection(DcMotor.Direction.REVERSE);
         fL.setDirection(DcMotor.Direction.REVERSE);
         intakeMain.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
@@ -125,36 +126,21 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("Press A to reset Yaw");
-        telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addLine("The left joystick sets the robot direction");
-        telemetry.addLine("Moving the right joystick left and right turns the robot");
+        telemetry.addLine("julien and fuyuan write good code");
 
-// If you press the A button, then you reset the Yaw to be zero from the way
-// the robot is currently pointing
-//if (gamepad1.a) {
-//imu.resetYaw();
-// }
-// If you press the left bumper, you get a drive from the point of view of the robot
-// (much like driving an RC vehicle)
         if (gamepad1.right_trigger > 0.5) {
             intakeMain.setPower(intakePower);
-
         } else {
             intakeMain.setPower(0);
-
         }
-        if (gamepad1.right_bumper) {
+        if (gamepad1.right_bumper && outtake.getVelocity() >= (0.95 * outtakeVelocity)) {
             letsOuttake();
 
         } else {
             transfer.setPower(0);
         }
-        if (gamepad1.left_bumper) {
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        } else {
-            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        }
+        drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
         outtake.setVelocity(outtakeVelocity);
         fRIntake.setPower(intakeServosPower);
         fLIntake.setPower(-1 * intakeServosPower);
@@ -163,22 +149,6 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         transfer.setPower(transferPower);
     }
     // This routine drives the robot field relative
-    private void driveFieldRelative(double forward, double right, double rotate) {
-// First, convert direction being asked to drive to polar coordinates
-        double theta = Math.atan2(forward, right);
-        double r = Math.hypot(right, forward);
-
-// Second, rotate angle by the angle the robot is pointing
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-
-// Third, convert back to cartesian
-        double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
-
-// Finally, call the drive method with robot relative forward and right amounts
-        drive(newForward, newRight, rotate);
-    }
 
     // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {

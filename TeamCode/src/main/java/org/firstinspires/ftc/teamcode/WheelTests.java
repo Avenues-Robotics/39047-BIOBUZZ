@@ -62,6 +62,9 @@ public class WheelTests extends OpMode {
     DcMotorEx fR;
     DcMotorEx bL;
     DcMotorEx bR;
+    CRServo fRIntake;
+    CRServo fLIntake;
+
 
 
     // This declares the IMU needed to get the current direction the robot is facing
@@ -76,6 +79,8 @@ public class WheelTests extends OpMode {
         fR = hardwareMap.get(DcMotorEx.class, "fR");
         bL = hardwareMap.get(DcMotorEx.class, "bL");
         bR = hardwareMap.get(DcMotorEx.class, "bR");
+        fRIntake = hardwareMap.get(CRServo.class, "fRIntake");
+        fLIntake = hardwareMap.get(CRServo.class, "fLIntake");
 
 
         // We set the left motors in reverse which is needed for drive trains where the left
@@ -99,29 +104,18 @@ public class WheelTests extends OpMode {
     @Override
     public void loop() {
         if(gamepad1.x){
-            fL.setPower(.2);
+            fLIntake.setPower(.2);
         }
         else{
-            fL.setPower(0);
+            fLIntake.setPower(0);
         }
         if(gamepad1.y){
-            bL.setPower(.2);
+            fRIntake.setPower(.2);
         }
         else{
-            bL.setPower(0);
+            fRIntake.setPower(0);
         }
-        if(gamepad1.b){
-            fR.setPower(.2);
-        }
-        else{
-            fR.setPower(0);
-        }
-        if(gamepad1.a){
-            bR.setPower(.2);
-        }
-        else{
-            bR.setPower(0);
-        }
+
 
     }
 }
