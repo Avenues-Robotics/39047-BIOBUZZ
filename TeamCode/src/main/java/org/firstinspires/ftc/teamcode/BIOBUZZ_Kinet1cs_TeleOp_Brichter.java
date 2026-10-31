@@ -70,13 +70,15 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     CRServo fLIntake;
 
 
+
+
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
     // VARIABLES
     public static double intakePower = 0.3;
     public static double outtakeVelocity = 1500;
-    public static double transferPower = 0.2;
+    public static double transferPower = 0.4;
     public static double intakeServosPower = 0.3;
 
     @Override
@@ -113,9 +115,9 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         imu = hardwareMap.get(IMU.class, "imu");
 // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -128,11 +130,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     public void loop() {
         telemetry.addLine("julien and fuyuan write good code");
 
-        if (gamepad1.right_trigger > 0.5) {
-            intakeMain.setPower(intakePower);
-        } else {
-            intakeMain.setPower(0);
-        }
+
+
         if (gamepad1.right_bumper && outtake.getVelocity() >= (0.95 * outtakeVelocity)) {
             letsOuttake();
 
@@ -141,9 +140,19 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         }
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-        outtake.setVelocity(outtakeVelocity);
+        if (gamepad1.right_trigger > 0.5) {
+            intakeMain.setPower(intakePower);
+            outtakeVelocity = (1);
+            telemetry.addLine("outtake stopping for intake");
+        } else {
+            intakeMain.setPower(0);
+            outtakeVelocity = 1500;
+        }
         fRIntake.setPower(intakeServosPower);
         fLIntake.setPower(-1 * intakeServosPower);
+        outtake.setVelocity(outtakeVelocity);
+        telemetry.addLine("outtake velocity set to:" + outtakeVelocity);
+        telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
     }
     public void letsOuttake(){ //function to activate the transfer
         transfer.setPower(transferPower);
