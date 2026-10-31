@@ -77,7 +77,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
 
     // VARIABLES
     public static double intakePower = 0.3;
-    public static double outtakeVelocity = 1500;
+    public static double outtakeVelocity = 2200;
     public static double transferPower = 0.4;
     public static double intakeServosPower = 0.3;
 
