@@ -128,7 +128,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("julien and fuyuan write good code");
+        telemetry.addLine("julien and fuyuan write good code :)");
 
 
 
