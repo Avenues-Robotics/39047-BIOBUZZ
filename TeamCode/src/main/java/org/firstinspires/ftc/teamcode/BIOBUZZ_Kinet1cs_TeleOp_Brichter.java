@@ -128,8 +128,6 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("julien and fuyuan write good code :)");
-
         //this will trigger the transfer
         if (gamepad1.right_bumper && outtake.getVelocity() >= (0.95 * outtakeVelocity)) {
             letsOuttake();
@@ -156,7 +154,12 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         fRIntake.setPower(intakeServosPower);
         fLIntake.setPower(-1 * intakeServosPower);
         outtake.setVelocity(outtakeVelocity);
-        telemetry.addLine("outtake velocity set to:" + outtakeVelocity);
+
+        //TELEMETRY
+        telemetry.addLine("julien and fuyuan write good code :)");
+        if (outtakeVelocity - outtake.getVelocity() < 100 && outtakeVelocity - outtake.getVelocity() > -100){
+            telemetry.addLine("outtake velocity set to:" + outtakeVelocity);
+        }
         telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
     }
     public void letsOuttake(){ //function to activate the transfer
