@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -72,7 +73,9 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     CRServo transfer;
     CRServo fRIntake;
     CRServo fLIntake;
-    //GoBildaPinpointDriver pinpoint; odometry stuff
+    //DistanceSensor distanceRight; //relative to front of robot these might be wrong
+    //DistanceSensor distanceLeft; //relative to front of robot AKA intake
+    //GoBildaPinpointDriver pinpoint; //odometry stuff
 
 
 
