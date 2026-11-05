@@ -68,11 +68,9 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     DcMotorEx fR;
     DcMotorEx bL;
     DcMotorEx bR;
-    DcMotorEx intakeMain;
     DcMotorEx outtake;
     CRServo transfer;
-    CRServo fRIntake;
-    CRServo fLIntake;
+    private Intake intake;
     //DistanceSensor distanceRight; //relative to front of robot these might be wrong
     //DistanceSensor distanceLeft; //relative to front of robot AKA intake
     //GoBildaPinpointDriver pinpoint; //odometry stuff
@@ -88,6 +86,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     public static double outtakeVelocity = 2200;
     public static double transferPower = 0.4;
     public static double intakeServosPower = 0.3;
+    public  String rightHiveCoordinates = "(0,0)"; //gotta change this
 
     @Override
     public void init() {
@@ -96,20 +95,16 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         fR = hardwareMap.get(DcMotorEx.class, "fR");
         bL = hardwareMap.get(DcMotorEx.class, "bL");
         bR = hardwareMap.get(DcMotorEx.class, "bR");
-        intakeMain = hardwareMap.get(DcMotorEx.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "outtake");
         transfer = hardwareMap.get(CRServo.class, "transfer");
-        fRIntake = hardwareMap.get(CRServo.class, "fRIntake");
-        fLIntake = hardwareMap.get(CRServo.class, "fLIntake");
+
 
 // certain motor need to be set in reverse in order for forward movement to work correctly
         bL.setDirection(DcMotor.Direction.FORWARD);
         fL.setDirection(DcMotor.Direction.FORWARD);
         bR.setDirection(DcMotor.Direction.REVERSE);
         fL.setDirection(DcMotor.Direction.REVERSE);
-        intakeMain.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
         outtake.setDirection(DcMotor.Direction.FORWARD); //MAY NEED CHANGING
-        fLIntake.setDirection(DcMotorSimple.Direction.FORWARD);
 
 // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
 // wires, you should remove these
@@ -117,7 +112,6 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intakeMain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -157,18 +151,13 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         //this will trigger the intake. when it runs we want the outtake stopped and when it's not
         //running we want it running.
         if (gamepad1.right_trigger > 0.5) {
-            intakeMain.setPower(intakePower);
-            outtakeVelocity = (1);
-            telemetry.addLine("outtake stopping for intake");
+            intake.intakeOn(intakePower);
         } else {
-            intakeMain.setPower(0);
+            intake.intakeOff();
             outtakeVelocity = 1500;
         }
+        intake.intakeServosOn(intakeServosPower);
 
-        //this keeps the outtake, intake srevos running at all times, except when intake
-        //is on (outtake will turn off)
-        fRIntake.setPower(intakeServosPower);
-        fLIntake.setPower(-1 * intakeServosPower);
         outtake.setVelocity(outtakeVelocity);
 
         //TELEMETRY
