@@ -29,22 +29,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -61,8 +47,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  *
  */
 @Configurable
-@TeleOp(name = "Kinet1cs Bare Bones Teleop", group = "Robot")
-public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
+@TeleOp(name = "Foxbot Kinet1cs Bare Bones Teleop", group = "Robot")
+public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     // declaration of motors
     private Drive drive;
     private Transfer transfer;
