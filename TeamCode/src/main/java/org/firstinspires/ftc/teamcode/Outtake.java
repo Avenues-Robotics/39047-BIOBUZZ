@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Outtake {
     DcMotorEx outtakeMain;
+
     public Outtake(HardwareMap hardwareMap){
         outtakeMain = hardwareMap.get(DcMotorEx.class, "outtake");
 
@@ -25,4 +26,8 @@ public class Outtake {
     public double getVelocity(){
         return outtakeMain.getVelocity();
     }
+    public void setVelocity(double velocity){
+        outtakeMain.setVelocity(velocity);
+    }
+
 }

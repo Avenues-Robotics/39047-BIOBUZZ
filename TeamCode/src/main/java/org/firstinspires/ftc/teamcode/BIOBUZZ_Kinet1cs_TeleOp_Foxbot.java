@@ -46,6 +46,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
+
+// we need to configure odom, find hive cords
+
 @Configurable
 @TeleOp(name = "Foxbot Kinet1cs Bare Bones Teleop", group = "Robot")
 public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
@@ -102,7 +105,13 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         telemetry.addLine("julien and fuyuan write good code :)");
         telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
     }
+
+    public void pointAndShoot(double relativeAngle, double rotationSpeed){
+        drive.rotate(relativeAngle, rotationSpeed);
+        outtake.setVelocity(1); //put regression determined equation here
     }
+
+}
 
 
 
