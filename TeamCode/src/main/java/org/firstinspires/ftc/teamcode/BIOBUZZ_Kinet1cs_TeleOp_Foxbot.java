@@ -57,7 +57,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     private Transfer transfer;
     private Intake intake;
     private Outtake outtake;
-    //private Odometry odometry;
+    private Odometry odometry;
 
     //DistanceSensor distanceRight; //relative to front of robot these might be wrong
     //DistanceSensor distanceLeft; //relative to front of robot AKA intake
@@ -93,6 +93,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         //running we want it running.
         if (gamepad1.right_trigger > 0.5) {
             intake.intakeOn(intakePower);
+            gamepad1.rumble(0.25, 0.25, 1);
         } else {
             intake.intakeOff();
             outtakeVelocity = 1500;
@@ -107,6 +108,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     }
 
     public void pointAndShoot(double relativeAngle, double rotationSpeed){
+        drive.killMotors();
         drive.rotate(relativeAngle, rotationSpeed);
         outtake.setVelocity(1); //put regression determined equation here
     }

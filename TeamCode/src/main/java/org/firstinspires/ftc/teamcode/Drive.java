@@ -23,6 +23,11 @@ public class Drive {
         fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void mecanumDrive(double forward, double right, double rotate) {
 // This calculates the power needed for each wheel based on the amount of forward,
@@ -78,6 +83,12 @@ public class Drive {
         } else {
             rotate((1 * degreesToTurn), speed);
         }
+    }
+    public void killMotors(){
+        fL.setPower(0);
+        bL.setPower(0);
+        bR.setPower(0);
+        fR.setPower(0);
     }
 
 }
