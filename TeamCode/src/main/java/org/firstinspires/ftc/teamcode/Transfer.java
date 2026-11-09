@@ -1,19 +1,24 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Transfer {
-    public CRServo transferServo;
+    DcMotorEx transferMain;
     public Transfer(HardwareMap hardwareMap){
-        transferServo = hardwareMap.get(CRServo.class, "transfer");
+        transferMain = hardwareMap.get(DcMotorEx.class, "transfer");
+
+        transferMain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        transferMain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void transferOn(double transferPower){
-        transferServo.setPower(transferPower);
+        transferMain.setPower(transferPower);
     }
     public void transferOff(){
-        transferServo.setPower(0);
+        transferMain.setPower(0);
     }
     public boolean isTransferOn(){
-        if (transferServo.getPower() > 0){
+        if (transferMain.getPower() > 0){
             return true;
         } else {
             return false;
