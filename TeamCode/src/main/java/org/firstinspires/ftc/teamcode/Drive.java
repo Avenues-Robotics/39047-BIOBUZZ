@@ -51,5 +51,33 @@ public class Drive {
         bL.setPower(maxSpeed * (backLeftPower / maxPower));
         bR.setPower(maxSpeed * (backRightPower / maxPower));
     }
+    public void rotate(double degrees, double speed){
+
+        int ticks = (int) (degrees * 1); //change this
+        if (ticks >= 0){
+            fL.setTargetPosition(ticks);
+            fR.setTargetPosition(ticks * -1);
+            bL.setTargetPosition(ticks);
+            bR.setTargetPosition(ticks * -1);
+        } else {
+            fL.setTargetPosition(ticks * -1);
+            fR.setTargetPosition(ticks);
+            bL.setTargetPosition(ticks * -1);
+            bR.setTargetPosition(ticks);
+        }
+
+        fL.setPower(speed);
+        fR.setPower(speed);
+        bL.setPower(speed);
+        bR.setPower(speed);
+    }
+    public void rotateToAngle(double degrees, double speed, double robotAngle){ //0º = start pos
+        double degreesToTurn = Math.abs(robotAngle - degrees);
+        if (degreesToTurn > 180){
+            rotate((-1 * degreesToTurn), speed);
+        } else {
+            rotate((1 * degreesToTurn), speed);
+        }
+    }
 
 }

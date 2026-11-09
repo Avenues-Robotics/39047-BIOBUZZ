@@ -54,7 +54,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     private Transfer transfer;
     private Intake intake;
     private Outtake outtake;
-    private Odometry odometry;
+    //private Odometry odometry;
 
     //DistanceSensor distanceRight; //relative to front of robot these might be wrong
     //DistanceSensor distanceLeft; //relative to front of robot AKA intake
