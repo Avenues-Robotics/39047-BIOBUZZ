@@ -13,11 +13,11 @@ public class Drive {
         fR = hardwareMap.get(DcMotorEx.class, "fR");
         bL = hardwareMap.get(DcMotorEx.class, "bL");
         bR = hardwareMap.get(DcMotorEx.class, "bR");
-
-        bL.setDirection(DcMotor.Direction.FORWARD);
+        
         fL.setDirection(DcMotor.Direction.FORWARD);
+        fR.setDirection(DcMotor.Direction.REVERSE);
+        bL.setDirection(DcMotor.Direction.FORWARD);
         bR.setDirection(DcMotor.Direction.REVERSE);
-        fL.setDirection(DcMotor.Direction.REVERSE);
 
         fL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
