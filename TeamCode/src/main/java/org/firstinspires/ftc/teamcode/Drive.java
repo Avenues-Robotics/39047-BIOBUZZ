@@ -1,119 +1,94 @@
 package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Drive {
+    DcMotorEx fL;
+    DcMotorEx fR;
+    DcMotorEx bL;
+    DcMotorEx bR;
+    public Drive(HardwareMap hardwareMap){
+        fL = hardwareMap.get(DcMotorEx.class, "fL");
+        fR = hardwareMap.get(DcMotorEx.class, "fR");
+        bL = hardwareMap.get(DcMotorEx.class, "bL");
+        bR = hardwareMap.get(DcMotorEx.class, "bR");
 
-    // the two drive motors, shared by every method in this class
-    private DcMotor motorLeft;
-    private DcMotor motorRight;
+        bL.setDirection(DcMotor.Direction.FORWARD);
+        fL.setDirection(DcMotor.Direction.FORWARD);
+        bR.setDirection(DcMotor.Direction.REVERSE);
+        fL.setDirection(DcMotor.Direction.REVERSE);
 
-    // the OpMode that is running, so we can use opModeIsActive() and telemetry
-    private LinearOpMode opMode;
+        fL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-    // Constructor: runs once when an OpMode does "new Drive(this)"
-    public Drive(LinearOpMode opMode) {
-        this.opMode = opMode;
-
-        // Create two DcMotor OBJECTS connected to the motors on
-        // the robot named motorLeft and motorRight
-        motorLeft = opMode.hardwareMap.get(DcMotor.class, "motorLeft");
-        motorRight = opMode.hardwareMap.get(DcMotor.class, "motorRight");
-
-        // reverse the left wheel so both wheels move forward in the same direction.
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorRight.setDirection(DcMotor.Direction.FORWARD);
-
-        // turn on encoders so the motor counts ticks and holds a steady speed
-        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+    public void mecanumDrive(double forward, double right, double rotate) {
+// This calculates the power needed for each wheel based on the amount of forward,
+// strafe right, and rotate
+        double frontLeftPower = forward + right + rotate;
+        double frontRightPower = forward - right - rotate;
+        double backRightPower = forward + right - rotate;
+        double backLeftPower = forward - right + rotate;
 
-    public void drive(double speed, int ticks) {
+        double maxPower = 1.0;
+        double maxSpeed = 1.0;  // make this slower for outreaches
 
-        // only running if op mode is on and also is not stopped by driver
-        if (opMode.opModeIsActive()) {
+// This is needed to make sure we don't pass > 1.0 to any wheel
+// It allows us to keep all of the motors in proportion to what they should
+// be and not get clipped
+        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
 
-            // Reset both encoder counts to zero so the target is measured from current position
-            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+// We multiply by maxSpeed so that it can be set lower for outreaches
+// When a young child is driving the robot, we may not want to allow full
+// speed.
+        fL.setPower(maxSpeed * (frontLeftPower / maxPower));
+        fR.setPower(maxSpeed * (frontRightPower / maxPower));
+        bL.setPower(maxSpeed * (backLeftPower / maxPower));
+        bR.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+    public void rotate(double degrees, double speed){
 
-            // both motors go the same distance so the robot drives straight
-            motorLeft.setTargetPosition(ticks);
-            motorRight.setTargetPosition(ticks);
+        int ticks = (int) (degrees * 1); //change this
+        if (ticks >= 0){
+            fL.setTargetPosition(ticks);
+            fR.setTargetPosition(ticks * -1);
+            bL.setTargetPosition(ticks);
+            bR.setTargetPosition(ticks * -1);
+        } else {
+            fL.setTargetPosition(ticks * -1);
+            fR.setTargetPosition(ticks);
+            bL.setTargetPosition(ticks * -1);
+            bR.setTargetPosition(ticks);
+        }
 
-            // Each motor drives to set position and stops.
-            motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // start the motors moving
-            motorLeft.setPower(speed);
-            motorRight.setPower(speed);
-
-            // loop until either motor reaches position or opmode stops running
-            while (opMode.opModeIsActive() &&
-                   (motorLeft.isBusy() && motorRight.isBusy())) {
-
-                // Show target and live position on driver station while driving
-                opMode.telemetry.addData("Driving to", ticks);
-                opMode.telemetry.addData("Current pos", "Left: " + motorLeft.getCurrentPosition() + " | Right: " + motorRight.getCurrentPosition());
-                opMode.telemetry.update();
-            }
-
-            // show final encoder position to check how close each motor got
-            opMode.telemetry.addData("Driving to", ticks);
-            opMode.telemetry.addData("Current pos", "Left: " + motorLeft.getCurrentPosition() + " | Right: " + motorRight.getCurrentPosition());
-            opMode.telemetry.update();
-
-            // Cut power to both motors
-            motorLeft.setPower(0);
-            motorRight.setPower(0);
+        fL.setPower(speed);
+        fR.setPower(speed);
+        bL.setPower(speed);
+        bR.setPower(speed);
+    }
+    public void rotateToAngle(double degrees, double speed, double robotAngle){ //0º = start pos
+        double degreesToTurn = Math.abs(robotAngle - degrees);
+        if (degreesToTurn > 180){
+            rotate((-1 * degreesToTurn), speed);
+        } else {
+            rotate((1 * degreesToTurn), speed);
         }
     }
-
-    public void rotate(double speed, double degrees) {
-
-        // only running if op mode is on and not stopped by driver
-        if (opMode.opModeIsActive()) {
-
-            // convert degrees to encoder ticks
-            int ticks = (int) (degrees * 11.1);
-
-            // Reset both encoder counts to zero so the target is measured from current position
-            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            // positive degrees = right turn, negative degrees = left turn
-            motorLeft.setTargetPosition(ticks);
-            motorRight.setTargetPosition(-ticks);
-
-            // Each motor drives to set position and stops.
-            motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // start the motors moving
-            motorLeft.setPower(speed);
-            motorRight.setPower(speed);
-
-            // loop until either motor reaches position or opmode stops running
-            while (opMode.opModeIsActive() &&
-                   (motorLeft.isBusy() && motorRight.isBusy())) {
-
-                // Show target and live position on driver station while turning
-                opMode.telemetry.addData("Rotating", degrees + " deg (" + ticks + " ticks)");
-                opMode.telemetry.addData("Current pos", "Left: " + motorLeft.getCurrentPosition() + " | Right: " + motorRight.getCurrentPosition());
-                opMode.telemetry.update();
-            }
-
-            // show final encoder position to check how close each motor got
-            opMode.telemetry.addData("Rotating", degrees + " deg (" + ticks + " ticks)");
-            opMode.telemetry.addData("Current pos", "Left: " + motorLeft.getCurrentPosition() + " | Right: " + motorRight.getCurrentPosition());
-            opMode.telemetry.update();
-
-            // Cut power to both motors
-            motorLeft.setPower(0);
-            motorRight.setPower(0);
-        }
+    public void killMotors(){
+        fL.setPower(0);
+        bL.setPower(0);
+        bR.setPower(0);
+        fR.setPower(0);
     }
+
 }

@@ -56,9 +56,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  */
 @Configurable
-@TeleOp(name = "Kinet1cs Bare Bones Teleop", group = "Robot")
-public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
-    // declaration of motors
+@Disabled
+@TeleOp(name = "Blair Kitchen Code", group = "Robot")
+public class CodeWithBlairKitchen extends OpMode {
+    // This declares the four motors needed
     DcMotorEx fL;
     DcMotorEx fR;
     DcMotorEx bL;
@@ -70,20 +71,17 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     CRServo fLIntake;
 
 
-
-
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
     // VARIABLES
     public static double intakePower = 0.3;
-    public static double outtakeVelocity = 2200;
-    public static double transferPower = 0.4;
+    public static double outtakeVelocity = 1500;
+    public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
 
     @Override
     public void init() {
-        //configures every motor to the hardware map on the driver's station
         fL = hardwareMap.get(DcMotorEx.class, "fL");
         fR = hardwareMap.get(DcMotorEx.class, "fR");
         bL = hardwareMap.get(DcMotorEx.class, "bL");
@@ -94,7 +92,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         fRIntake = hardwareMap.get(CRServo.class, "fRIntake");
         fLIntake = hardwareMap.get(CRServo.class, "fLIntake");
 
-// certain motor need to be set in reverse in order for forward movement to work correctly
+// We set the left motors in reverse which is needed for drive trains where the left
+// motors are opposite to the right ones.
         bL.setDirection(DcMotor.Direction.FORWARD);
         fL.setDirection(DcMotor.Direction.FORWARD);
         bR.setDirection(DcMotor.Direction.REVERSE);
@@ -113,11 +112,11 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
-// The orientation is correct. Do not change this below.
+// This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+                RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -128,41 +127,31 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("julien and fuyuan write good code :)");
+        telemetry.addLine("julien and fuyuan write good code");
 
-        //this will trigger the transfer
+        if (gamepad1.right_trigger > 0.5) {
+            intakeMain.setPower(intakePower);
+        } else {
+            intakeMain.setPower(0);
+        }
         if (gamepad1.right_bumper && outtake.getVelocity() >= (0.95 * outtakeVelocity)) {
             letsOuttake();
 
         } else {
             transfer.setPower(0);
         }
-        //drive function
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-        //this will trigger the intake. when it runs we want the outtake stopped and when it's not
-        //running we want it running.
-        if (gamepad1.right_trigger > 0.5) {
-            intakeMain.setPower(intakePower);
-            outtakeVelocity = (1);
-            telemetry.addLine("outtake stopping for intake");
-        } else {
-            intakeMain.setPower(0);
-            outtakeVelocity = 1500;
-        }
-
-        //this keeps the outtake, intake srevos running at all times, except when intake
-        //is on (outtake will turn off)
+        outtake.setVelocity(outtakeVelocity);
         fRIntake.setPower(intakeServosPower);
         fLIntake.setPower(-1 * intakeServosPower);
-        outtake.setVelocity(outtakeVelocity);
-        telemetry.addLine("outtake velocity set to:" + outtakeVelocity);
-        telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
     }
     public void letsOuttake(){ //function to activate the transfer
         transfer.setPower(transferPower);
     }
+    // This routine drives the robot field relative
 
+    // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {
 // This calculates the power needed for each wheel based on the amount of forward,
 // strafe right, and rotate
