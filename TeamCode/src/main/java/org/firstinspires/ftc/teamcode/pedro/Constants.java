@@ -23,4 +23,9 @@ public class Constants {
         c.backLeftDirection.set(DcMotorSimple.Direction.FORWARD);
         c.backRightDirection.set(DcMotorSimple.Direction.REVERSE);
     });
+
+    public static PinpointConfig pinpointConfig = new PinpointConfig(c -> {
+        c.name.set("pinpoint");
+        c.podtype.set();
+    });
 }
