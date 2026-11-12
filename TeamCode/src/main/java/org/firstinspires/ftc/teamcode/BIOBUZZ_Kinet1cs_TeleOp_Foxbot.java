@@ -71,8 +71,9 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public static double outtakeVelocity = 2200;
     public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
-    public  String rightHiveCoordinates = "(0,0)"; //gotta change this
-
+    public static double hiveX = 300;
+    public static double hiveY = 300; //change these
+    public static double rotationSpeed;
     @Override
     public void init() {
         telemetry.addLine("ALL SYSTEMS GO GO GO");
@@ -96,11 +97,10 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
             gamepad1.rumble(0.25, 0.25, 1);
         } else {
             intake.intakeOff();
-            outtakeVelocity = 1500;
         }
         intake.intakeServosOn(intakeServosPower);
 
-        outtake.outtakeOn(outtakeVelocity);
+        pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), hiveX, hiveY), rotationSpeed);
 
         //TELEMETRY
         telemetry.addLine("julien and fuyuan write good code :)");
