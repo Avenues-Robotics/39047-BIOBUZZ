@@ -10,8 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class Odometry {
-    public GoBildaPinpointDriver pinpoint; //odometry stuff
-    private IMU imu;
+    GoBildaPinpointDriver pinpoint; //odometry stuff
+    IMU imu;
     public Odometry(HardwareMap hardwareMap){
         //ODOMETRY STUFF
         // Get a reference to the sensor
