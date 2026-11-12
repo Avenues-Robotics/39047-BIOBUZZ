@@ -29,22 +29,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -60,9 +46,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
+
+// we need to configure odom, find hive cords
+
 @Configurable
-@TeleOp(name = "Kinet1cs Bare Bones Teleop", group = "Robot")
-public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
+@TeleOp(name = "Foxbot Kinet1cs Bare Bones Teleop", group = "Robot")
+public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     // declaration of motors
     private Drive drive;
     private Transfer transfer;
@@ -80,10 +69,11 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
     // VARIABLES
     public static double intakePower = 0.3;
     public static double outtakeVelocity = 2200;
-    public static double transferPower = 0.4;
+    public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
-    public  String rightHiveCoordinates = "(0,0)"; //gotta change this
-
+    public static double hiveX = 300;
+    public static double hiveY = 300; //change these
+    public static double rotationSpeed;
     @Override
     public void init() {
         telemetry.addLine("ALL SYSTEMS GO GO GO");
@@ -104,19 +94,26 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Brichter extends OpMode {
         //running we want it running.
         if (gamepad1.right_trigger > 0.5) {
             intake.intakeOn(intakePower);
+            gamepad1.rumble(0.25, 0.25, 1);
         } else {
             intake.intakeOff();
-            outtakeVelocity = 1500;
         }
         intake.intakeServosOn(intakeServosPower);
 
-        outtake.outtakeOn(outtakeVelocity);
+        pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), hiveX, hiveY), rotationSpeed);
 
         //TELEMETRY
         telemetry.addLine("julien and fuyuan write good code :)");
         telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
     }
+
+    public void pointAndShoot(double relativeAngle, double rotationSpeed){
+        drive.killMotors();
+        drive.rotate(relativeAngle, rotationSpeed);
+        outtake.setVelocity(1); //put regression determined equation here
     }
+
+}
 
 
 

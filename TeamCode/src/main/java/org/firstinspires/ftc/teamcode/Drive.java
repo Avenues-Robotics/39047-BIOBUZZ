@@ -23,6 +23,11 @@ public class Drive {
         fR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void mecanumDrive(double forward, double right, double rotate) {
 // This calculates the power needed for each wheel based on the amount of forward,
@@ -50,6 +55,40 @@ public class Drive {
         fR.setPower(maxSpeed * (frontRightPower / maxPower));
         bL.setPower(maxSpeed * (backLeftPower / maxPower));
         bR.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+    public void rotate(double degrees, double speed){
+
+        int ticks = (int) (degrees * 1); //change this
+        if (ticks >= 0){
+            fL.setTargetPosition(ticks);
+            fR.setTargetPosition(ticks * -1);
+            bL.setTargetPosition(ticks);
+            bR.setTargetPosition(ticks * -1);
+        } else {
+            fL.setTargetPosition(ticks * -1);
+            fR.setTargetPosition(ticks);
+            bL.setTargetPosition(ticks * -1);
+            bR.setTargetPosition(ticks);
+        }
+
+        fL.setPower(speed);
+        fR.setPower(speed);
+        bL.setPower(speed);
+        bR.setPower(speed);
+    }
+    public void rotateToAngle(double degrees, double speed, double robotAngle){ //0º = start pos
+        double degreesToTurn = Math.abs(robotAngle - degrees);
+        if (degreesToTurn > 180){
+            rotate((-1 * degreesToTurn), speed);
+        } else {
+            rotate((1 * degreesToTurn), speed);
+        }
+    }
+    public void killMotors(){
+        fL.setPower(0);
+        bL.setPower(0);
+        bR.setPower(0);
+        fR.setPower(0);
     }
 
 }

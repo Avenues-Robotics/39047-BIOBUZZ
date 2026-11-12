@@ -76,17 +76,23 @@ public class Odometry {
     public double getX(){
         pinpoint.update();
         Pose2D pose2D = pinpoint.getPosition();
-        return pose2D.getX(DistanceUnit.INCH);
+        return pose2D.getX(DistanceUnit.CM);
     }
     public double getY(){
         pinpoint.update();
         Pose2D pose2D = pinpoint.getPosition();
-        return pose2D.getY(DistanceUnit.INCH);
+        return pose2D.getY(DistanceUnit.CM);
     }
     public double getHeading(){
         pinpoint.update();
         Pose2D pose2D = pinpoint.getPosition();
         return pose2D.getHeading(AngleUnit.DEGREES);
+    }
+    public double getHiveDistance(double robotX, double robotY, double hiveX, double hiveY){
+        return Math.sqrt((Math.pow(robotX - hiveX, 2) + (Math.pow(robotY - hiveY, 2))));
+    }
+    public double getHiveAngleRelativeToBotDegrees(double botX, double botY, double hiveX, double hiveY){ //relative to x-axis line
+        return (Math.toDegrees(Math.atan2((hiveY - botY), (hiveX - botX))));
     }
 
 }
