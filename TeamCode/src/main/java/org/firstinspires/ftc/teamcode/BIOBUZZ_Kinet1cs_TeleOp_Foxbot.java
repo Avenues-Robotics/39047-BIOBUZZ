@@ -77,12 +77,17 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     @Override
     public void init() {
         telemetry.addLine("ALL SYSTEMS GO GO GO");
+        drive = new Drive(hardwareMap);
+        transfer = new Transfer(hardwareMap);
+        intake = new Intake(hardwareMap);
+        outtake = new Outtake(hardwareMap);
     }
 
     @Override
     public void loop() {
         //this will trigger the transfer
         if (gamepad1.right_bumper) {
+            //pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), hiveX, hiveY), rotationSpeed);
             transfer.transferOn(transferPower);
         } else {
             transfer.transferOff();
@@ -100,7 +105,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         }
         intake.intakeServosOn(intakeServosPower);
 
-        pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), hiveX, hiveY), rotationSpeed);
+
 
         //TELEMETRY
         telemetry.addLine("julien and fuyuan write good code :)");
