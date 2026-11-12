@@ -91,7 +91,7 @@ public class Odometry {
     public double getHiveDistance(double robotX, double robotY, double hiveX, double hiveY){
         return Math.sqrt((Math.pow(robotX - hiveX, 2) + (Math.pow(robotY - hiveY, 2))));
     }
-    public double getHiveAngleRelativeToBotDegrees(double botX, double botY, double hiveX, double hiveY){ //relative to x axis line
+    public double getHiveAngleRelativeToBotDegrees(double botX, double botY, double hiveX, double hiveY){ //relative to x-axis line
         return (Math.toDegrees(Math.atan2((hiveY - botY), (hiveX - botX))));
     }
 
