@@ -4,10 +4,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Drive {
-    DcMotorEx fL;
-    DcMotorEx fR;
-    DcMotorEx bL;
-    DcMotorEx bR;
+    public DcMotorEx fL;
+    public DcMotorEx fR;
+    public DcMotorEx bL;
+    public DcMotorEx bR;
     public Drive(HardwareMap hardwareMap){
         fL = hardwareMap.get(DcMotorEx.class, "fL");
         fR = hardwareMap.get(DcMotorEx.class, "fR");
