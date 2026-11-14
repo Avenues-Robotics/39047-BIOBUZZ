@@ -71,8 +71,12 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public static double outtakeVelocity = 2200;
     public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
-    public static double hiveX = 300;
-    public static double hiveY = 300; //change these
+    public static double hiveOgX = 0;
+    public static double hiveOgY = 0; //og means that the original hive position; aka the og hiveX is
+    public static double hiveInx = 0; //the hiveX where it originally started up; In means inverted
+    public static double hiveInY = 0; //remember to configure!!!
+    public static double aimedHiveX = 300;
+    public static double aimedHiveY = 300; //change these
     public static double rotationSpeed;
     @Override
     public void init() {
@@ -87,7 +91,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public void loop() {
         //this will trigger the transfer
         if (gamepad1.right_bumper) {
-            //pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), hiveX, hiveY), rotationSpeed);
+            //pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY), rotationSpeed);
             transfer.transferOn(transferPower);
         } else {
             transfer.transferOff();
