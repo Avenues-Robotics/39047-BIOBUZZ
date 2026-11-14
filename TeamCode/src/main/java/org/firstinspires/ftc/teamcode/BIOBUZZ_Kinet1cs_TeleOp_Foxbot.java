@@ -86,12 +86,12 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public double turningTo = 0;
     @Override
     public void init() {
-        telemetry.addLine("ALL SYSTEMS GO GO GO");
         drive = new Drive(hardwareMap);
         transfer = new Transfer(hardwareMap);
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
         odometry = new Odometry(hardwareMap);
+        telemetry.addLine("ALL SYSTEMS GO GO GO");
     }
 
     @Override
