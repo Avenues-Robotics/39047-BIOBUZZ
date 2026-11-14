@@ -91,7 +91,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public void loop() {
         //this will trigger the transfer
         if (gamepad1.right_bumper) {
-            //pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY), rotationSpeed);
+            pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY), rotationSpeed);
             transfer.transferOn(transferPower);
         } else {
             transfer.transferOff();
@@ -114,6 +114,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         //TELEMETRY
         telemetry.addLine("julien and fuyuan write good code :)");
         telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
+        telemetry.addLine("current X: " + odometry.getX());
+        telemetry.addLine("current Y: " + odometry.getY());
     }
 
     public void pointAndShoot(double relativeAngle, double rotationSpeed){
