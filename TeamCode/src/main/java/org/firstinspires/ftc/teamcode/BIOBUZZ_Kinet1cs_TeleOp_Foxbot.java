@@ -79,10 +79,11 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public static double hiveOgY = 0; //og means that the original hive position; aka the og hiveX is
     public static double hiveInx = 0; //the hiveX where it originally started up; In means inverted
     public static double hiveInY = 0; //remember to configure!!!
-    public static double aimedHiveX = 300;
-    public static double aimedHiveY = 300; //change these
+    public static double aimedHiveX = 100;
+    public static double aimedHiveY = 100; //change these
     public static double rotationSpeed;
     public boolean odometryConfigured = true;
+    public double turningTo = 0;
     @Override
     public void init() {
         telemetry.addLine("ALL SYSTEMS GO GO GO");
@@ -104,11 +105,13 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         if (gamepad1.right_bumper) {
             pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY), rotationSpeed);
             transfer.transferOn(transferPower);
-        } else {
+        } else if (gamepad1.left_bumper){
             transfer.transferOff();
         }
-        //drive function
-        drive.mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+
+
+
 
         //this will trigger the intake. when it runs we want the outtake stopped and when it's not
         //running we want it running.
@@ -119,7 +122,12 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
             intake.intakeOff();
         }
         intake.intakeServosOn(intakeServosPower);
-
+        if (Drive.isTurning){
+            drive.rotateToAngle(turningTo, 0.5, odometry.getHeading());
+        } else {
+            //drive function
+            drive.mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
 
 
         //TELEMETRY
@@ -132,7 +140,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
 
     public void pointAndShoot(double relativeAngle, double rotationSpeed){
         drive.killMotors();
-        drive.rotateToAngle(relativeAngle, rotationSpeed, odometry.getHeading());
+        Drive.isTurning = true;
+        turningTo = odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY);
         outtake.setVelocity(1500); //put regression determined equation here
     }
 
