@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode;
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+@Configurable
 public class Drive {
     DcMotorEx fL;
     DcMotorEx fR;
     DcMotorEx bL;
     DcMotorEx bR;
+    public static double offset = 100;
+    public static boolean isTurning = false;
     public Drive(HardwareMap hardwareMap){
         fL = hardwareMap.get(DcMotorEx.class, "fL");
         fR = hardwareMap.get(DcMotorEx.class, "fR");
@@ -15,7 +19,7 @@ public class Drive {
         bR = hardwareMap.get(DcMotorEx.class, "bR");
 
         fL.setDirection(DcMotor.Direction.FORWARD);
-        fR.setDirection(DcMotor.Direction.FORWARD);
+        fR.setDirection(DcMotor.Direction.REVERSE);
         bL.setDirection(DcMotor.Direction.FORWARD);
         bR.setDirection(DcMotor.Direction.REVERSE);
 
@@ -56,32 +60,22 @@ public class Drive {
         bL.setPower(maxSpeed * (backLeftPower / maxPower));
         bR.setPower(maxSpeed * (backRightPower / maxPower));
     }
-    public void rotate(double degrees, double speed){
 
-        int ticks = (int) (degrees * 1); //change this
-        if (ticks >= 0){
-            fL.setTargetPosition(ticks);
-            fR.setTargetPosition(ticks * -1);
-            bL.setTargetPosition(ticks);
-            bR.setTargetPosition(ticks * -1);
-        } else {
-            fL.setTargetPosition(ticks * -1);
-            fR.setTargetPosition(ticks);
-            bL.setTargetPosition(ticks * -1);
-            bR.setTargetPosition(ticks);
-        }
-
-        fL.setPower(speed);
-        fR.setPower(speed);
-        bL.setPower(speed);
-        bR.setPower(speed);
-    }
     public void rotateToAngle(double degrees, double speed, double robotAngle){ //0º = start pos
-        double degreesToTurn = Math.abs(robotAngle - degrees);
-        if (degreesToTurn > 180){
-            rotate((-1 * degreesToTurn), speed);
+        double error = Math.abs(robotAngle - degrees);
+
+        if (error > 2){
+            double turnPower = (0.02 * error);
+            fL.setPower(-1 * turnPower);
+            fR.setPower(turnPower);
+            bL.setPower(-1 * turnPower);
+            bR.setPower(turnPower);
         } else {
-            rotate((1 * degreesToTurn), speed);
+            isTurning = false;
+            fL.setPower(0);
+            fR.setPower(0);
+            bL.setPower(0);
+            bR.setPower(0);
         }
     }
     public void killMotors(){

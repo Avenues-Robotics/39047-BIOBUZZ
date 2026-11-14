@@ -32,6 +32,10 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
  * that the robot drives the direction you push the joystick regardless of the current orientation
@@ -78,6 +82,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public static double aimedHiveX = 300;
     public static double aimedHiveY = 300; //change these
     public static double rotationSpeed;
+    public boolean odometryConfigured = true;
     @Override
     public void init() {
         telemetry.addLine("ALL SYSTEMS GO GO GO");
@@ -85,11 +90,17 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         transfer = new Transfer(hardwareMap);
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
+        odometry = new Odometry(hardwareMap);
     }
 
     @Override
     public void loop() {
         //this will trigger the transfer
+        if (odometryConfigured){
+            odometry.configureOdometryPos();
+            odometryConfigured = false;
+        }
+
         if (gamepad1.right_bumper) {
             pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY), rotationSpeed);
             transfer.transferOn(transferPower);
@@ -116,12 +127,13 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
         telemetry.addLine("current X: " + odometry.getX());
         telemetry.addLine("current Y: " + odometry.getY());
+        telemetry.addLine("current heading: " + odometry.getHeading());
     }
 
     public void pointAndShoot(double relativeAngle, double rotationSpeed){
         drive.killMotors();
-        drive.rotate(relativeAngle, rotationSpeed);
-        outtake.setVelocity(1); //put regression determined equation here
+        drive.rotateToAngle(relativeAngle, rotationSpeed, odometry.getHeading());
+        outtake.setVelocity(1500); //put regression determined equation here
     }
 
 }

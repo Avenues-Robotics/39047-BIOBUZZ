@@ -29,16 +29,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -55,67 +47,31 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  */
 @Configurable
-@TeleOp(name = "WheelTest", group = "Robot")
-public class WheelTests extends OpMode {
+@TeleOp(name = "Tests", group = "Robot")
+public class Tests extends OpMode {
     // This declares the four motors needed
-    DcMotorEx fL;
-    DcMotorEx fR;
-    DcMotorEx bL;
-    DcMotorEx bR;
-    CRServo fRIntake;
-    CRServo fLIntake;
-
-
-
-    // This declares the IMU needed to get the current direction the robot is facing
-    IMU imu;
-
-    // VARIABLES
+    private Drive drive;
+    private Odometry odometry;
+    private boolean lastA = true;
 
 
     @Override
     public void init() {
-        fL = hardwareMap.get(DcMotorEx.class, "fL");
-        fR = hardwareMap.get(DcMotorEx.class, "fR");
-        bL = hardwareMap.get(DcMotorEx.class, "bL");
-        bR = hardwareMap.get(DcMotorEx.class, "bR");
-        fRIntake = hardwareMap.get(CRServo.class, "fRIntake");
-        fLIntake = hardwareMap.get(CRServo.class, "fLIntake");
-
-
-        // We set the left motors in reverse which is needed for drive trains where the left
-        // motors are opposite to the right ones.
-
-
-        imu = hardwareMap.get(IMU.class, "imu");
-        // This needs to be changed to match the orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-
-        RevHubOrientationOnRobot orientationOnRobot = new
-                RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-
+        drive = new Drive(hardwareMap);
+        odometry = new Odometry(hardwareMap);
     }
 
     @Override
     public void loop() {
-        if(gamepad1.x){
-            fLIntake.setPower(.2);
+        if (gamepad1.a && lastA){
+            Drive.isTurning = true;
+            lastA = false;
+        } else if (!gamepad1.a){
+            lastA = true;
         }
-        else{
-            fLIntake.setPower(0);
+        if (Drive.isTurning){
+            drive.rotateToAngle(179, 0.5, odometry.getHeading());
         }
-        if(gamepad1.y){
-            fRIntake.setPower(.2);
-        }
-        else{
-            fRIntake.setPower(0);
-        }
-
-
+        telemetry.addLine("current heading: " + odometry.getHeading());
     }
 }

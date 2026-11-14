@@ -21,7 +21,7 @@ public class Odometry {
         configurePinpoint();
 
         // Set the location of the robot - this should be the place you are starting the robot from
-        pinpoint.setPosition(new Pose2D(DistanceUnit.CM, 0, 0, AngleUnit.DEGREES, 0));
+
 
         imu = hardwareMap.get(IMU.class, "imu");
 // The orientation is correct. Do not change this below.
@@ -44,7 +44,9 @@ public class Odometry {
          *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
          *  Forward of center is a positive number, backwards is a negative number.
          */
-        pinpoint.setOffsets(-11, -0.5, DistanceUnit.CM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.resetPosAndIMU();
+
+        pinpoint.setOffsets(-11, -0.5, DistanceUnit.CM); //these are somewhat precise
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -71,7 +73,7 @@ public class Odometry {
          * This is recommended before you run your autonomous, as a bad initial calibration can cause
          * an incorrect starting value for x, y, and heading.
          */
-        pinpoint.resetPosAndIMU();
+
     }
     public double getX(){
         pinpoint.update();
@@ -93,6 +95,9 @@ public class Odometry {
     }
     public double getHiveAngleRelativeToBotDegrees(double botX, double botY, double hiveX, double hiveY){ //relative to x-axis line
         return (Math.toDegrees(Math.atan2((hiveY - botY), (hiveX - botX))));
+    }
+    public void configureOdometryPos(){
+        pinpoint.setPosition(new Pose2D(DistanceUnit.CM, 73, 194, AngleUnit.DEGREES, 0));
     }
 
 }
