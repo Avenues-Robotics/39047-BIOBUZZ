@@ -63,9 +63,14 @@ public class Drive {
     }
 
     public void rotateToAngle(double degrees, double speed, double robotAngle){ //0º = start pos
-        error = Math.abs(robotAngle - degrees);
+        if (robotAngle > degrees){
+            error = robotAngle - degrees;
+            error = error * -1;
+        } else {
+            error = degrees - robotAngle;
+        }
 
-        if (error > 3){
+        if (error > 3 && error < 180){
             double turnPower = (0.02 * error);
             fL.setPower(-1 * turnPower);
             fR.setPower(turnPower);
