@@ -12,6 +12,7 @@ public class Drive {
     DcMotorEx bR;
     public static double offset = 100;
     public static boolean isTurning = false;
+    public static double error;
     public Drive(HardwareMap hardwareMap){
         fL = hardwareMap.get(DcMotorEx.class, "fL");
         fR = hardwareMap.get(DcMotorEx.class, "fR");
@@ -62,7 +63,7 @@ public class Drive {
     }
 
     public void rotateToAngle(double degrees, double speed, double robotAngle){ //0º = start pos
-        double error = Math.abs(robotAngle - degrees);
+        error = Math.abs(robotAngle - degrees);
 
         if (error > 3){
             double turnPower = (0.02 * error);

@@ -75,12 +75,12 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public static double outtakeVelocity = 2200;
     public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
-    public static double hiveOgX = 0;
+    public static double hiveOgX = 0; //remember that these are AIMING POINTS
     public static double hiveOgY = 0; //og means that the original hive position; aka the og hiveX is
-    public static double hiveInx = 0; //the hiveX where it originally started up; In means inverted
+    public static double hiveInX = 0; //the hiveX where it originally started up; In means inverted
     public static double hiveInY = 0; //remember to configure!!!
-    public static double aimedHiveX = 100;
-    public static double aimedHiveY = 100; //change these
+    public static double aimedHiveX = 0;
+    public static double aimedHiveY = 0; //change these
     public static double rotationSpeed;
     public boolean odometryConfigured = true;
     public double turningTo = 0;
@@ -101,10 +101,18 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
             odometry.configureOdometryPos();
             odometryConfigured = false;
         }
-
+        if (odometry.getY() > 0){
+            aimedHiveX = hiveOgX;
+            aimedHiveY=hiveOgY;
+        } else {
+            aimedHiveX = hiveInX;
+            aimedHiveY = hiveInY;
+        }
         if (gamepad1.right_bumper) {
             pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY), rotationSpeed);
-            transfer.transferOn(transferPower);
+            if (Drive.error < 3){
+                transfer.transferOn(transferPower);
+            }
         } else if (gamepad1.left_bumper){
             transfer.transferOff();
         }
@@ -136,6 +144,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         telemetry.addLine("current X: " + odometry.getX());
         telemetry.addLine("current Y: " + odometry.getY());
         telemetry.addLine("current heading: " + odometry.getHeading());
+        telemetry.addLine("distance to hive (CM): " + odometry.getHiveDistance(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY));
     }
 
     public void pointAndShoot(double relativeAngle, double rotationSpeed){
