@@ -56,12 +56,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 @Configurable
 @TeleOp(name = "Foxbot Kinet1cs Bare Bones Teleop", group = "Robot")
 public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
-    // declaration of motors
+    // declaration
     private Drive drive;
     private Transfer transfer;
     private Intake intake;
     private Outtake outtake;
     private Odometry odometry;
+    private Distance_Sensor distanceSensor;
 
     //DistanceSensor distanceRight; //relative to front of robot these might be wrong
     //DistanceSensor distanceLeft; //relative to front of robot AKA intake
@@ -91,7 +92,14 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
         odometry = new Odometry(hardwareMap);
-        telemetry.addLine("ALL SYSTEMS GO GO GO");
+        distanceSensor = new Distance_Sensor(hardwareMap);
+    }
+
+    //loading screen
+    @Override 
+    public void init_loop() {
+        int loading = (int)(getRuntime() * 2) % 3 + 1;
+        telemetry.addLine("Initializing op, please wait" + "...".substring(0, loading));
     }
 
     @Override
@@ -140,11 +148,16 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
 
         //TELEMETRY
         telemetry.addLine("julien and fuyuan write good code :)");
+        telemetry.addLine("---outtake-----------------------------");
         telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
+        telemetry.addLine("---odometry-----------------------------");
         telemetry.addLine("current X: " + odometry.getX());
         telemetry.addLine("current Y: " + odometry.getY());
         telemetry.addLine("current heading: " + odometry.getHeading());
         telemetry.addLine("distance to hive (CM): " + odometry.getHiveDistance(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY));
+        telemetry.addLine("---distance sensor-----------------------------");
+        telemetry.addLine("total balls: " + distanceSensor.countBalls());
+        
     }
 
     public void pointAndShoot(double relativeAngle, double rotationSpeed){
