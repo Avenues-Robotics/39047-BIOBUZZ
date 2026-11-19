@@ -19,8 +19,8 @@ public class Drive {
         bL = hardwareMap.get(DcMotorEx.class, "bL");
         bR = hardwareMap.get(DcMotorEx.class, "bR");
 
-        fL.setDirection(DcMotor.Direction.FORWARD);
-        fR.setDirection(DcMotor.Direction.REVERSE);
+        fL.setDirection(DcMotor.Direction.REVERSE);
+        fR.setDirection(DcMotor.Direction.FORWARD);
         bL.setDirection(DcMotor.Direction.FORWARD);
         bR.setDirection(DcMotor.Direction.REVERSE);
 

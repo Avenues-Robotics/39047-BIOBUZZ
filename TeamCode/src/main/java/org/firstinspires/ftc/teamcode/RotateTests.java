@@ -47,8 +47,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  *
  */
 @Configurable
-@TeleOp(name = "Tests", group = "Robot")
-public class Tests extends OpMode {
+@TeleOp(name = "RotateTests", group = "Robot")
+public class RotateTests extends OpMode {
     // This declares the four motors needed
     private Drive drive;
     private Odometry odometry;
