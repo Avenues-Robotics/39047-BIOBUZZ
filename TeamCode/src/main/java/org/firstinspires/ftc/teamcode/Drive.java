@@ -70,7 +70,7 @@ public class Drive {
             error = degrees - robotAngle;
         }
 
-        if (error > 3 && error < 180){
+        if (Math.abs(error) > 3 && error < 180){
             double turnPower = (0.02 * error);
             fL.setPower(-1 * turnPower);
             fR.setPower(turnPower);

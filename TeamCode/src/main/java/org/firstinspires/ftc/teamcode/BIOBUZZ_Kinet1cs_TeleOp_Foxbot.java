@@ -28,13 +28,16 @@
  */
 package org.firstinspires.ftc.teamcode;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.logger.java.Configurable;
+import org.firstinspires.ftc.teamcode.logger.java.LoggerTelemetry;
+
+import java.util.logging.Logger;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -63,6 +66,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     private Outtake outtake;
     private Odometry odometry;
 
+    private LoggerTelemetry telemetry;
+
     //DistanceSensor distanceRight; //relative to front of robot these might be wrong
     //DistanceSensor distanceLeft; //relative to front of robot AKA intake
 
@@ -75,10 +80,10 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
     public static double outtakeVelocity = 2200;
     public static double transferPower = 0.2;
     public static double intakeServosPower = 0.3;
-    public static double hiveOgX = 0; //remember that these are AIMING POINTS
-    public static double hiveOgY = 0; //og means that the original hive position; aka the og hiveX is
-    public static double hiveInX = 0; //the hiveX where it originally started up; In means inverted
-    public static double hiveInY = 0; //remember to configure!!!
+    public static double hiveOgX = -35; //remember that these are AIMING POINTS
+    public static double hiveOgY = 116; //og means that the original hive position; aka the og hiveX is
+    public static double hiveInX = -35; //the hiveX where it originally started up; In means inverted
+    public static double hiveInY = 116; //remember to configure!!!
     public static double aimedHiveX = 0;
     public static double aimedHiveY = 0; //change these
     public static double rotationSpeed;
@@ -90,13 +95,13 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         transfer = new Transfer(hardwareMap);
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
+        telemetry = new LoggerTelemetry(this);
         odometry = new Odometry(hardwareMap);
         telemetry.addLine("ALL SYSTEMS GO GO GO");
     }
 
     @Override
     public void loop() {
-        //this will trigger the transfer
         if (odometryConfigured){
             odometry.configureOdometryPos();
             odometryConfigured = false;
@@ -109,10 +114,11 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
             aimedHiveY = hiveInY;
         }
         if (gamepad1.right_bumper) {
-            pointAndShoot(odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY), rotationSpeed);
-            if (Drive.error < 3){
-                transfer.transferOn(transferPower);
-            }
+            pointAndShoot();
+            transfer.transferOn(transferPower);
+            //if (Math.abs(Drive.error) < 3){
+                //transfer.transferOn(transferPower);
+          //  }
         } else if (gamepad1.left_bumper){
             transfer.transferOff();
         }
@@ -131,7 +137,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         }
         intake.intakeServosOn(intakeServosPower);
         if (Drive.isTurning){
-            drive.rotateToAngle(turningTo, 0.5, odometry.getHeading());
+            //drive.rotateToAngle(turningTo, 0.5, odometry.getHeading());
         } else {
             //drive function
             drive.mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
@@ -144,14 +150,17 @@ public class BIOBUZZ_Kinet1cs_TeleOp_Foxbot extends OpMode {
         telemetry.addLine("current X: " + odometry.getX());
         telemetry.addLine("current Y: " + odometry.getY());
         telemetry.addLine("current heading: " + odometry.getHeading());
+        telemetry.addGraph("outtake vel", outtake.getVelocity());
+        telemetry.addGraph("target vel", outtakeVelocity);
         telemetry.addLine("distance to hive (CM): " + odometry.getHiveDistance(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY));
+        telemetry.update();
     }
 
-    public void pointAndShoot(double relativeAngle, double rotationSpeed){
+    public void pointAndShoot(){
         drive.killMotors();
         Drive.isTurning = true;
         turningTo = odometry.getHiveAngleRelativeToBotDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY);
-        outtake.setVelocity(1500); //put regression determined equation here
+        outtake.setVelocity(outtakeVelocity); //put regression determined equation here
     }
 
 }
