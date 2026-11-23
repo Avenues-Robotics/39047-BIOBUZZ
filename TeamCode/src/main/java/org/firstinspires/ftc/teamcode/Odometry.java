@@ -46,7 +46,7 @@ public class Odometry {
          */
         pinpoint.resetPosAndIMU();
 
-        pinpoint.setOffsets(-11, -0.5, DistanceUnit.CM); //these are somewhat precise
+        pinpoint.setOffsets(-10.6, -4.75, DistanceUnit.CM); //these are somewhat precise
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -93,11 +93,11 @@ public class Odometry {
     public double getHiveDistance(double robotX, double robotY, double hiveX, double hiveY){
         return Math.sqrt((Math.pow(robotX - hiveX, 2) + (Math.pow(robotY - hiveY, 2))));
     }
-    public double getHiveAngleRelativeToBotDegrees(double botX, double botY, double hiveX, double hiveY){ //relative to x-axis line
-        return (Math.toDegrees(Math.atan2((hiveY - botY), (hiveX - botX))));
+    public double getHiveBearingDegrees(double botX, double botY, double hiveX, double hiveY){ //relative to x-axis line
+        return (-Math.toDegrees(Math.atan2((hiveY - botY),(hiveX - botX))));
     }
     public void configureOdometryPos(){
-        pinpoint.setPosition(new Pose2D(DistanceUnit.CM, 73, 194, AngleUnit.DEGREES, 0));
+        pinpoint.setPosition(new Pose2D(DistanceUnit.CM, 0, 0.01, AngleUnit.DEGREES, 90));
     }
 
 }

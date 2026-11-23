@@ -62,7 +62,7 @@ public class Drive {
         bR.setPower(maxSpeed * (backRightPower / maxPower));
     }
 
-    public void rotateToAngle(double degrees, double speed, double robotAngle){ //0º = start pos
+    public void rotateToAngle(double degrees, double speed, double robotAngle){ //90º = start pos
         if (robotAngle > degrees){
             error = robotAngle - degrees;
             error = error * -1;
