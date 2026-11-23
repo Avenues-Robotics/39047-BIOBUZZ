@@ -114,8 +114,10 @@ public class BIOBUZZ_Kinet1cs_TeleOp_NODOMETRY_FoxBot extends OpMode {
         }
         if (gamepad1.right_bumper) {
             transfer.transferOn(transferPower);
+            intake.intakeOn(intakePower);
         } else if (gamepad1.left_bumper){
             transfer.transferOff();
+            intake.intakeOff();
         }
 
         //this will trigger the intake. when it runs we want the outtake stopped and when it's not
@@ -130,7 +132,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_NODOMETRY_FoxBot extends OpMode {
         if (Drive.isTurning){
             drive.rotateToAngle(turningTo, 0.5, odometry.getHeading());
         } else {
-            drive.mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            drive.driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
         //NODOMETRY SETUP WITH GP2

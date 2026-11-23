@@ -133,7 +133,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_ODOMETRY_Foxbot extends OpMode {
         if (Drive.isTurning){
             drive.rotateToAngle(turningTo, 0.5, odometry.getHeading());
         } else {
-            drive.mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            drive.driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
 
