@@ -151,8 +151,14 @@ public class BIOBUZZ_Kinet1cs_TeleOp_ODOMETRY_Foxbot extends OpMode {
 
     public void pointAndShoot(){
         drive.killMotors();
+        double targetAngle = odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY);
+        if (targetAngle >= 0){
+            targetAngle = targetAngle - 180;
+        } else {
+            targetAngle = targetAngle + 180;
+        }
         Drive.isTurning = true;
-        turningTo = (odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY) + 180);
+        turningTo = targetAngle;
         outtake.setVelocity(outtakeVelocity); //put regression determined equation here
     }
 
