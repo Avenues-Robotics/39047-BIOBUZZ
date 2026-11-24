@@ -116,9 +116,11 @@ public class BIOBUZZ_Kinet1cs_TeleOp_NODOMETRY_FoxBot extends OpMode {
             transfer.transferOn(transferPower);
             intake.intakeOn(intakePower);
         } else if (gamepad1.left_bumper){
-            transfer.transferOff();
+            transfer.stopAtRound();
             intake.intakeOff();
         }
+
+        telemetry.transferUpdate(); //transfer update loop
 
         //this will trigger the intake. when it runs we want the outtake stopped and when it's not
         //running we want it running.
@@ -152,8 +154,11 @@ public class BIOBUZZ_Kinet1cs_TeleOp_NODOMETRY_FoxBot extends OpMode {
         telemetry.addLine("current Y                | " + odometry.getY());
         telemetry.addLine("current heading          | " + odometry.getHeading());
         telemetry.addData("heading                  | ", odometry.getHeading()); // 🚨Fixed: addGraph only exists in the missing logger
-        telemetry.addData("target headin            | ", odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY)); // 🚨Fixed: addGraph only exists in the missing logger
+        telemetry.addData("target heading           | ", odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY)); // 🚨Fixed: addGraph only exists in the missing logger
         telemetry.addLine("distance to hive (CM)    | " + odometry.getHiveDistance(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY));
+        telemetry.addLine("current transfer ticks   | " + transfer.getTicks());
+        telemetry.addLine("former transfer ticks    | " + transfer.formerTicks());
+        telemetry.addLine("ticks error              | " + transfer.ticksError());
         telemetry.update();
     }
 

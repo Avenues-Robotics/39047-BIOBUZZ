@@ -96,7 +96,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_ODOMETRY_Foxbot extends OpMode {
         outtake = new Outtake(hardwareMap);
         //telemetry = new LoggerTelemetry(this); // 🚨Fixed: not in the repo
         odometry = new Odometry(hardwareMap);
-        machine = new Machine(odometry);
+        //machine = new Machine(odometry); //turn this back on when Machine.java has its constructor
         telemetry.addLine("ALL SYSTEMS GO GO GO");
     }
 
@@ -140,17 +140,20 @@ public class BIOBUZZ_Kinet1cs_TeleOp_ODOMETRY_Foxbot extends OpMode {
         }
 
 
-        machine.draw(aimedHiveX, aimedHiveY); //draw the live map
+        //machine.draw(aimedHiveX, aimedHiveY); //draw the live map. turn this back on when Machine.java has draw()
 
         //TELEMETRY
         telemetry.addLine("julien and fuyuan write good code :)");
-        telemetry.addLine("current outtake velocity:" + outtake.getVelocity());
-        telemetry.addLine("current X: " + odometry.getX());
-        telemetry.addLine("current Y: " + odometry.getY());
-        telemetry.addLine("current heading: " + odometry.getHeading());
-        telemetry.addData("heading:", odometry.getHeading()); // 🚨Fixed: addGraph only exists in the missing logger
-        telemetry.addData("target heading: ", odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY)); // 🚨Fixed: addGraph only exists in the missing logger
-        telemetry.addLine("distance to hive (CM): " + odometry.getHiveDistance(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY));
+        telemetry.addLine("current outtake velocity | " + outtake.getVelocity());
+        telemetry.addLine("current X                | " + odometry.getX());
+        telemetry.addLine("current Y                | " + odometry.getY());
+        telemetry.addLine("current heading          | " + odometry.getHeading());
+        telemetry.addData("heading                  | ", odometry.getHeading()); // 🚨Fixed: addGraph only exists in the missing logger
+        telemetry.addData("target heading           | ", odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY)); // 🚨Fixed: addGraph only exists in the missing logger
+        telemetry.addLine("distance to hive (CM)    | " + odometry.getHiveDistance(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY));
+        telemetry.addLine("current transfer ticks   | " + transfer.getTicks());
+        telemetry.addLine("former transfer ticks    | " + transfer.formerTicks());
+        telemetry.addLine("ticks error              | " + transfer.ticksError());
         telemetry.update();
     }
 

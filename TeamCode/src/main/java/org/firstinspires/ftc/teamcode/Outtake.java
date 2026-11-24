@@ -11,10 +11,10 @@ import com.bylazar.configurables.annotations.Configurable; // 🚨Fixed: the log
 @Configurable
 public class Outtake {
     DcMotorEx outtakeMain;
-    public static double f = 13.1552778;
     public static double p = 32.0;
     public static double i = 0.1;
     public static double d = 0;
+    public static double f = 13.05;
 
     public Outtake(HardwareMap hardwareMap){
         outtakeMain = hardwareMap.get(DcMotorEx.class, "outtake");
