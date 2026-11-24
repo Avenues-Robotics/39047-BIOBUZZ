@@ -133,7 +133,7 @@ public class BIOBUZZ_Kinet1cs_TeleOp_ODOMETRY_Foxbot extends OpMode {
         if (Drive.isTurning){
             drive.rotateToAngle(turningTo, 0.5, odometry.getHeading());
         } else {
-            drive.driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            drive.mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
 
@@ -151,14 +151,8 @@ public class BIOBUZZ_Kinet1cs_TeleOp_ODOMETRY_Foxbot extends OpMode {
 
     public void pointAndShoot(){
         drive.killMotors();
-        double targetAngle = odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY);
-        if (targetAngle >= 0){
-            targetAngle = targetAngle - 180;
-        } else {
-            targetAngle = targetAngle + 180;
-        }
         Drive.isTurning = true;
-        turningTo = targetAngle;
+        turningTo = (odometry.getHiveBearingDegrees(odometry.getX(), odometry.getY(), aimedHiveX, aimedHiveY) + 180);
         outtake.setVelocity(outtakeVelocity); //put regression determined equation here
     }
 

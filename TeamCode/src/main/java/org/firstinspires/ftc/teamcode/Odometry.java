@@ -94,7 +94,7 @@ public class Odometry {
         return Math.sqrt((Math.pow(robotX - hiveX, 2) + (Math.pow(robotY - hiveY, 2))));
     }
     public double getHiveBearingDegrees(double botX, double botY, double hiveX, double hiveY){ //relative to x-axis line
-        return Math.toDegrees(Math.atan2(hiveY - botY, hiveX - botX));
+        return (-Math.toDegrees(Math.atan2((hiveY - botY),(hiveX - botX))));
     }
     public void configureOdometryPos(){
         pinpoint.setPosition(new Pose2D(DistanceUnit.CM, 0, 0.01, AngleUnit.DEGREES, 90));
