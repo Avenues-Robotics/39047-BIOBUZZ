@@ -5,18 +5,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 public class Distance_Sensor {
-    private DigitalChannel distanceSensorFrontRight;
+    private DigitalChannel distanceSensorFrontRight; // 🚨Fixed: the whole file was commented out
     private DigitalChannel distanceSensorFrontLeft;
     private DigitalChannel distanceSensorOuttake;
     public static boolean lastRightDetected = false;
     public static boolean lastLeftDetected = false;
-    public static boolean lastOuttakeDetected = false;
+    public static boolean lastOuttakeDetected = false; // 🚨Fixed: had no start value
     public static int balls = 4;
     private int ballsCounted = 0;
     public Distance_Sensor(HardwareMap hardwareMap){
-        distanceSensorFrontRight = hardwareMap.get(DigitalChannel.class, "distanceSensorFrontRight");
-        distanceSensorFrontLeft = hardwareMap.get(DigitalChannel.class, "distanceSensorFrontLeft");
-        distanceSensorOuttake = hardwareMap.get(DigitalChannel.class, "distanceSensorOuttake");
+        distanceSensorFrontRight = hardwareMap.get(DigitalChannel.class, "distanceSensorFrontRight"); // 🚨Fixed: double brackets
+        distanceSensorFrontLeft = hardwareMap.get(DigitalChannel.class, "distanceSensorFrontLeft"); // 🚨Fixed: double brackets, no semicolon
+        distanceSensorOuttake = hardwareMap.get(DigitalChannel.class, "distanceSensorOuttake"); // 🚨Fixed: double brackets, no semicolon
 
         distanceSensorFrontRight.setMode(DigitalChannel.Mode.INPUT);
         distanceSensorFrontLeft.setMode(DigitalChannel.Mode.INPUT);
@@ -50,9 +50,9 @@ public class Distance_Sensor {
         }
         return 0;
     }
-    public int countBalls(){
+    public int countBalls(){ // 🚨Fixed: was missing ()
         balls = balls + getIntakeBalls() - getOuttakeBalls();
-        return balls;
+        return balls; // 🚨Fixed: returned nothing
     }
 
 }

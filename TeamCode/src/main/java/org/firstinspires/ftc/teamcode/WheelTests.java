@@ -33,12 +33,8 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -104,16 +100,28 @@ public class WheelTests extends OpMode {
     @Override
     public void loop() {
         if(gamepad1.x){
-            fLIntake.setPower(.2);
+            fL.setPower(.2);
         }
         else{
-            fLIntake.setPower(0);
+            fL.setPower(0);
         }
         if(gamepad1.y){
-            fRIntake.setPower(.2);
+            fR.setPower(.2);
         }
         else{
-            fRIntake.setPower(0);
+            fR.setPower(0);
+        }
+        if(gamepad1.a){
+            bR.setPower(.2);
+        }
+        else{
+            bR.setPower(0);
+        }
+        if(gamepad1.b){
+            bL.setPower(.2);
+        }
+        else{
+            bL.setPower(0);
         }
 
 
